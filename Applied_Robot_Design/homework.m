@@ -62,14 +62,14 @@ ddth2 = zeros(len);
 ddth3 = zeros(len);
 tau = zeros(len(2), 3);
 power = zeros(len(2), 3);
-for i = 2:1/del_t
-    dth1(i) = (th1(i) - th1(i-1))/(del_t);
-    dth2(i) = (th2(i) - th2(i-1))/(del_t);
-    dth3(i) = (th3(i) - th3(i-1))/(del_t);
+for i = 1:len(2)
+    dth1(i) = (th1(i) - th1(max(1,i-1)))/(del_t);
+    dth2(i) = (th2(i) - th2(max(1,i-1)))/(del_t);
+    dth3(i) = (th3(i) - th3(max(1,i-1)))/(del_t);
     
-    ddth1(i) = (dth1(i) - dth1(i-1))/(del_t);
-    ddth2(i) = (dth2(i) - dth2(i-1))/(del_t);
-    ddth3(i) = (dth3(i) - dth3(i-1))/(del_t);
+    ddth1(i) = (dth1(i) - dth1(max(1,i-1)))/(del_t);
+    ddth2(i) = (dth2(i) - dth2(max(1,i-1)))/(del_t);
+    ddth3(i) = (dth3(i) - dth3(max(1,i-1)))/(del_t);
     
     M = [M11(i) M12(i) M13(i) ; M21(i) M22(i) M23(i) ; M31(i) M32(i) M33(i)];
     C = [A112(i)*dth1(i)*dth2(i) + A123(i)*dth2(i)*dth3(i) + A113(i)*dth1(i)*dth3(i) + A133(i)*dth3(i).^2 + A122(i)*dth2(i).^2;
@@ -83,25 +83,25 @@ for i = 2:1/del_t
     power(i,1:3) = abs([dth1(i) dth2(i) dth3(i)]'.*tau(i,1:3)');
 end
 subplot(2,3,3)
-plot(t(2:end-2), dth1(2:end-2), t(2:end-2), dth2(2:end-2), t(2:end-2), dth3(2:end-2))
+plot(t, dth1, t, dth2, t, dth3)
 title('joint angle velocity')
 legend('\omega_1', '\omega_2', '\omega_3')
 grid on
 
 subplot(2,3,4)
-plot(t(2:end-2), ddth1(2:end-2), t(2:end-2), ddth2(2:end-2), t(2:end-2), ddth3(2:end-2))
+plot(t, ddth1, t, ddth2, t, ddth3)
 title('joint angle acceleration')
 legend('\alpha_1', '\alpha_2', '\alpha_3')
 grid on
 
 subplot(2,3,5)
-plot(t(2:end-2), tau(2:end-2,:,:))
+plot(t, tau)
 title('joint torgue')
 legend('\tau_1', '\tau_2', '\tau_3')
 grid on
 
 subplot(2,3,6)
-plot(t(2:end-2), power(2:end-2,:,:))
+plot(t, power)
 title('joint power')
 legend('\itp_1', '\itp_2', '\itp_3')
 grid on
