@@ -21,12 +21,12 @@ thd1 = -pi;
 % ↑
 % path2
 % ↓
-x2 =  0.60;   y2 = 0.40;   dy_dx_2f =  0;   dy_dx_2i = 0;   t2 = 6;
+x2 =  0.60;   y2 = 0.40;   dy_dx_2f =  0;   dy_dx_2i = 0;   t2 = 4;
 thd2 = -pi/2;
 % ↑
 % path3
 % ↓
-x3 = 1.025;   y3 = 0.20;   dy_dx_3f = -1;                     t3 = 8;
+x3 = 1.0;   y3 = 0.20;   dy_dx_3f = -1;                   t3 = 6;
 thd3 = -pi/2;
 
 del_t = 0.1;
@@ -48,22 +48,21 @@ A3 = make_trajectory(x2, y2, dy_dx_2i, x3, y3, dy_dx_3f);
 for i = 0:len1(2)-1
     px(i+1) = (x1-x0)*0.5*(1-cos(pi/(len1(2)-1)*i))+x0;
     py(i+1) = A1'*[1 px(i+1) px(i+1)^2 px(i+1)^3]';
-    thd(i+1) = thd0*(1-i/(len1(2)-1))+thd1*i/(len1(2)-1);
+    thd(i+1) = thd1*(1-i/(len1(2)-1))+thd1*i/(len1(2)-1);
 end
 for i = len1(2):len1(2)+len2(2)-1
     px(i+1) = (x2-x1)*0.5*(1-cos(pi/(len2(2)-1)*(i-len1(2))))+x1;
     py(i+1) = A2'*[1 px(i+1) px(i+1)^2 px(i+1)^3]';
-    thd(i+1) = (thd2 - thd1)*(1-exp(-(i-len1(2))/6))+thd1;
+    thd(i+1) = thd1*(1-(i-len1(2))/(len2(2)-1))+thd0*(i-len1(2))/(len2(2)-1);
 end
 for i = len1(2)+len2(2):len1(2)+len2(2)+len3(2)-1
     px(i+1) = (x3-x2)*0.5*(1-cos(pi/(len3(2)-1)*(i-len1(2)-len2(2))))+x2;
     py(i+1) = A3'*[1 px(i+1) px(i+1)^2 px(i+1)^3]';
-    thd(i+1) = thd2*(1-(i-len1(2)-len2(2))/(len3(2)-1))+thd3*(i-len1(2)-len2(2))/(len3(2)-1);
+    thd(i+1) = thd3*(1-(i-len1(2)-len2(2))/(len3(2)-1))+thd2*(i-len1(2)-len2(2))/(len3(2)-1);
 end
-
-subplot(3,3,4)
-plot(tspan, thd)
-
+figure
+plot(tspan, thd*180/pi)
+return
 subplot(3,3,1)
 plot(tspan, px,'o')
 xlabel('t'); ylabel('x position');
@@ -80,10 +79,10 @@ title('x-y position')
 xlabel('x position'); ylabel('y position');
 
 %% 역기구학
-x3_ = px - (l5).*cos(thd+pi/2);
-y3_ = py - (l5).*sin(thd+pi/2);
+x3_ = px - (l5).*cos(thd);
+y3_ = py - (l5).*sin(thd);
 
-c3 = (x3_.^2 + (y3_-l1).^2 - l2.^2 - l3.^2)./(2*l2*l3)
+c3 = (x3_.^2 + (y3_-l1).^2 - l2.^2 - l3.^2)./(2*l2*l3);
 s3 = -sqrt(1-c3.^2);
 
 th3 = atan2(s3, c3);
@@ -192,7 +191,7 @@ L(4) = Link([0,  0, l4, -pi/2], 'R');
 L(5) = Link([0, l5,  0,     0], 'R');
 robot = SerialLink(L, 'name', 'bobper');
 
-figure
+subplot(3,3,4)
 for i =1:numel(th3)
     robot.plot([0 th2(i) th3(i) th4(i) th5], 'floorlevel', 0, 'jvec', 'fps', 60, 'base', 'trail',{'r','LineWidth', 1})
 end%-pi/2
