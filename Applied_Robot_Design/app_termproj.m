@@ -197,11 +197,12 @@ legend('\itp_2', '\itp_3', '\itp_4')
 grid on
 
 
-fprintf('max angular velocity is %f %f %f %f \n\n', max(dth2), max(dth3), max(dth4))
-fprintf('max angular acceleration is %f %f %f \n', max(ddth2), max(ddth3), max(ddth4))
-fprintf('max torque is %f %f %f\n', max(tau))
-fprintf('max power is %f %f %f\n', max(power))
+fprintf('max angular velocity is [%f, %f, %f]\n', max(dth2), max(dth3), max(dth4))
+fprintf('max angular acceleration is [%f, %f, %f]\n', max(ddth2), max(ddth3), max(ddth4))
+fprintf('max torque is [%f, %f, %f]\n', max(tau))
+fprintf('max power is [%f, %f, %f]\n', max(power))
 %% DH-Parameter 시뮬레이션
+
 %{
 %           a    alpha    d    theta
 DHparams = [  0,  pi/2, l1,   0;
@@ -217,18 +218,19 @@ L(3) = Link([0,  0, l3,     0], 'R');
 L(4) = Link([0,  0, l4, -pi/2], 'R');
 L(5) = Link([0, l5,  0,     0], 'R');
 robot = SerialLink(L, 'name', 'bobper');
-v = VideoWriter('motion.avi');
-
-open(v)
+%v = VideoWriter('motion.avi');
+%{
+%open(v)
 figure
 for i =1:len(2)
     robot.plot([0 th2(i) th3(i) th4(i) th5(i)], 'floorlevel', 0, 'jvec', 'fps', 1/del_t, 'base', 'trail',{'r','LineWidth', 1})
-    frame = getframe(gcf);
-    writeVideo(v,frame);
+ %   frame = getframe(gcf);
+  %  writeVideo(v,frame);
 end
-close(v)
+%close(v)
+%}
 
-
+%% function
 function R = RotMat(axis, rad)
     axis = find(['x', 'y', 'z'] == axis);
     R = ones(3); V = [cos(rad) -sin(rad); sin(rad) cos(rad)];
