@@ -15,25 +15,25 @@ thd0 = -pi;
 % ↑
 % path1
 % ↓
-x1 =  0.45;   y1 = 0.03;   dy_dx_1f = 0;   dy_dx_1i = 1;   t1 = 2;
+x1 =  0.45;   y1 = 0.03;   dy_dx_1f = 0;   dy_dx_1i = 1;   t1 = 1;
 thd1 = -pi;
 % ↑
 % path2
 % ↓
-x2 =  0.60;   y2 = 0.40;   dy_dx_2f =  0;   dy_dx_2i = 0;  t2 = 6;
+x2 =  0.60;   y2 = 0.40;   dy_dx_2f =  0;   dy_dx_2i = 0;  t2 = 2;
 thd2 = -pi/2;
 % ↑
 % path3
 % ↓
-x3 = 1.065;   y3 = 0.20;   dy_dx_3f = -1;                  t3 = 8;
+x3 = 1.065;   y3 = 0.20;   dy_dx_3f = -1;                  t3 = 3;
 thd3 = -pi/8*5;
 % ↑
 % path4
 % ↓
-t4 = 10;
+t4 = 4;
 
 
-del_t = 0.03;
+del_t = 0.01;
 tspan = t0:del_t:t4;
 tspan1 = t0:del_t:t1;
 tspan2 = t1:del_t:t2;
@@ -81,23 +81,23 @@ end
 
 subplot(3,3,4)
 plot(tspan, thd)
-xlabel('t'); ylabel('\theta_d')
-title('target of \theta_d')
+xlabel('Time [sec]'); ylabel('Angle [rad]')
+title('Orientation of End Effector')
 
 subplot(3,3,1)
 plot(tspan, px,'o', 'MarkerSize', 1)
-xlabel('t'); ylabel('x position');
-title('x position')
+xlabel('Time [sec]'); ylabel('Position of X [m]');
+title('X Position')
 
 subplot(3,3,2)
 plot(tspan,py, 'o', 'MarkerSize', 1)
-title('y position')
-xlabel('t'); ylabel('y position');
+title('Y Position')
+xlabel('Time [sec]'); ylabel('Position of Y [m]');
 
 subplot(3,3,3)
 plot(px, py)
-title('x-y position')
-xlabel('x position'); ylabel('y position');
+title('X-Y Position')
+xlabel('Position of X'); ylabel('Position of Y [m] ');
 %% 역기구학
 x3_ = px - (l5).*cos(thd+pi/2);
 y3_ = py - (l5).*sin(thd+pi/2);
@@ -116,9 +116,10 @@ end
 
 subplot(3,3,5)
 plot(tspan, th2, tspan, th3, tspan, th4);
-title('joint angle')
+title('Joint Angle')
 grid on
 legend('\theta_2', '\theta_3', '\theta_4')
+xlabel('Time [sec]'); ylabel('Angle [rad]')
 
 M11 = m2*lc2^2 + I2 +m3*l2^2 + m3*lc3^2 + 2*m3*l2*lc3*cos(th3) + I3+m4*l2^2+m4*l3^2+m4*lc4^2 + m4*l2*l3*2*cos(th3) + m4*l3*lc4*2*cos(th4)+ m4*l2*lc4*2*cos(th3+th4) + I4;
 M12 = m3*lc3^2 + m3*l2*lc3*cos(th3) + I3 + m4*l3^2 + m4*lc4^2 + m4*l2*l3*cos(th3) + m4*l3*lc4*2*cos(th4) + m4*l2*lc4*cos(th3+th4) + I4;
@@ -174,32 +175,38 @@ end
 
 subplot(3,3,6)
 plot(tspan, dth2, tspan, dth3, tspan, dth4)
-title('joint angle velocity')
+title('Joint Anglular Velocity')
 legend('\omega_2', '\omega_3', '\omega_4')
+xlabel('Time [sec]'); ylabel('Angular Velocity [rad/sec]')
 grid on
 
 subplot(3,3,7)
 plot(tspan, ddth2, tspan, ddth3, tspan, ddth4)
-title('joint angle acceleration')
+title('Joint Anglular Acceleration')
 legend('\alpha_2', '\alpha_3', '\alpha_4')
+xlabel('Time [sec]'); ylabel('Angular Acceleration [rad/sec^2]')
 grid on
 
 subplot(3,3,8)
 plot(tspan, tau)
-title('joint torgue')
+title('Joint Torgue')
 legend('\tau_2', '\tau_3', '\tau_4')
+xlabel('Time [sec]'); ylabel('torque [Nm]')
 grid on
 
 subplot(3,3,9)
 plot(tspan, power)
-title('joint power')
+title('Joint Power')
 legend('\itp_2', '\itp_3', '\itp_4')
+xlabel('Time [sec]'); ylabel('power [W]')
 grid on
 
-
-fprintf('max angular velocity is [%f, %f, %f]\n', max(dth2), max(dth3), max(dth4))
-fprintf('max angular acceleration is [%f, %f, %f]\n', max(ddth2), max(ddth3), max(ddth4))
+fprintf('max angular velocity(rad/s) is [%f, %f, %f]\n', max(abs(dth2)), max(abs(dth3)), max(abs(dth4)))
+fprintf('max angular velocity(rpm) is [%f, %f, %f]\n', max(abs(dth2))/2/pi*60, max(abs(dth3))/2/pi*60, max(abs(dth4))/2/pi*60)
+fprintf('mean angular velocity(rpm) is [%f, %f, %f]\n', mean(abs(dth2))/2/pi*60, mean(abs(dth3))/2/pi*60, mean(abs(dth4))/2/pi*60)
+fprintf('max angular acceleration is [%f, %f, %f]\n', max(abs(ddth2)), max(abs(ddth3)), max(abs(ddth4)))
 fprintf('max torque is [%f, %f, %f]\n', max(tau))
+fprintf('median torque is [%f, %f, %f]\n', median(tau))
 fprintf('max power is [%f, %f, %f]\n', max(power))
 %% DH-Parameter 시뮬레이션
 
